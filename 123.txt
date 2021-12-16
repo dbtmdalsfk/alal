@@ -1,0 +1,826 @@
+123#include<stdio.h>
+#include<windows.h>
+#include<conio.h>
+#include<time.h>
+#define BALL_BOTTOM_Y 17
+#define OB_BOTTOM_Y 20
+#define OB_BOTTOM_X 45
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
+#define SUBMIT 4
+void CurXY(int, int);
+int key() {
+	char temp = _getch();
+
+	if (temp == 'w'|| temp == 'W') {
+		return UP;
+	}
+	else if (temp == 'a' || temp == 'A') {
+		return LEFT;
+	}
+	else if (temp == 's'|| temp == 'S') {
+		return DOWN;
+	}
+	else if (temp == 'd'|| temp == 'D') {
+		return RIGHT;
+	}
+
+}
+void consol() {
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	cursorInfo.dwSize = 1;
+	cursorInfo.bVisible = FALSE;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+int meun()
+{
+	consol();
+	int n = key();
+	int a = 24;
+	int b = 12;
+	system("cls");
+	CurXY(a +100, b -12);
+	printf("\n\n\n\n");
+	printf("                                     #####   #   #      #        #    #####\n");
+	printf("                                      #     #   #      # #     ##    #    #\n");
+	printf("                                     #     #   #      #  #   # #    #####\n");
+	printf("                                 #  #     #   #      #   # #  #    # \n");
+	printf("                                  #       ###       #    #   #    #\n");
+	CurXY(a - 2, b);
+	printf(">   *게 임 시 작*");
+	CurXY(a, b+1);
+	printf("   *정 보*");
+	CurXY(a, b+2);
+	printf("*게 임 종 료*");
+	while (1) {
+		int n = key();
+		switch (n) {
+		case UP: {
+			if (b > 12) {
+				CurXY(a - 2, b);
+				printf(" ");
+				CurXY(a - 2, --b);
+				printf(">");
+			}
+			break;
+			}
+		case DOWN: {
+			if (b < 14) {
+				CurXY(a - 2, b);
+				printf(" ");
+				CurXY(a - 2, ++b);
+				printf(">");
+
+			}
+			break;
+		}
+		case ' ': {
+			return b - 12;
+		}
+	}
+}
+}
+int mapstage() {
+	int n = key();
+	int x = 24;
+	int y = 12;
+	system("cls");
+	CurXY(x, y - 4);
+	printf("***난 이 도 선 택***");
+	CurXY(x - 2, y );
+	printf(">   *쉬 움*");
+	CurXY(x, y + 1 );
+	printf("*어 려 움*");
+	CurXY(x, y + 2);
+	printf("*뒤 로*");
+	while (1) {
+		int n = key();
+		switch (n) {
+		case UP: {
+			if (y > 12) {
+				CurXY(x - 2, y );
+				printf(" ");
+				CurXY(x - 2, --y  );
+				printf(">");
+			}
+			break;
+		}
+		case DOWN:{
+				   if (y < 14) {
+					   CurXY(x - 2, y);
+					   printf(" ");
+					   CurXY(x - 2, ++y );
+					   printf(">");
+					   }
+			   break;
+			   }
+			   case ' ': {
+				   return y - 12;
+			   }
+		}
+	}
+}
+		
+
+	
+
+void ConsoleView()
+{
+	system("mode con:cols=100 lines=25");
+	system("title 점프게임");
+}
+
+void CurXY(int x, int y)
+{
+	COORD Pos;
+	Pos.X = 2 * x;
+	Pos.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+int GetKey()
+{
+
+	if (_kbhit() != 0)
+	{
+		return _getch();
+	}
+	return 0;
+}
+
+void globe(int ballY)
+{
+	CurXY(0, ballY);
+	static bool leg = true;
+	printf(" ******\n");
+	printf("*       *\n");
+	printf("*       *\n");
+	printf("*       *\n");
+	printf(" *******\n");
+	if (leg)
+	{
+		printf("   ㅣ-   l  \n");
+		printf("      - \n");
+		leg = false;
+	}
+	else
+	{
+		printf("   l   -l  \n");
+		printf("   -     \n");
+		leg = true;
+	}
+}
+
+void obstacle(int OBX)
+{
+	CurXY(OBX, OB_BOTTOM_Y);
+	printf("*****\n");
+	CurXY(OBX, OB_BOTTOM_Y+1);
+	printf(" ***\n");
+	CurXY(OBX, OB_BOTTOM_Y+2);
+	printf(" ***\n");
+	CurXY(OBX, OB_BOTTOM_Y+3);
+	printf(" ***\n");
+}
+
+void GameOver(const int score)
+{
+	system("cls");
+	int x = 16;
+	int y = 8;
+	CurXY(x, y);
+	printf("----------------------------------\n");
+	CurXY(x, y + 1);
+	printf("----장애물에 걸려 넘어졌습니다----\n");
+	CurXY(x, y + 2);
+	printf("----------------------------------\n");
+	CurXY(x, y + 6);
+	printf("점수 : %d", score);
+
+	printf("\n\n\n\n\n\n\n\n");
+	system("pause");
+}
+bool Collision(const int OBX, const int ballY)
+{
+	CurXY(0, 0);
+	printf("OBX : %d, ballY : %d", OBX, ballY);
+	if (OBX <= 8 && OBX >= 1  && ballY > 13)
+	{
+		return true;
+	}
+	return false;
+}
+
+void game_hard() {
+	ConsoleView();
+	bool Jump = false; //점프가 아닐때
+	bool Bottom = true; //버튼이 눌러졌을때
+	const int gravity = 3;
+
+	int ballY = BALL_BOTTOM_Y;
+	int OBX = OB_BOTTOM_X;
+
+	int score = 0;
+	clock_t start, curr;
+	start = clock();
+
+	while (true)
+	{
+		if (Collision(OBX, ballY))
+			break;
+
+		if (GetKey() == ' ' && Bottom)
+		{
+			Jump = true; //점프 됐을떄
+			Bottom = false;
+		}
+		if (Jump)
+		{
+			ballY -= gravity;
+		}
+		else
+		{
+			ballY += gravity;
+		}
+
+		if (ballY >= BALL_BOTTOM_Y)
+		{
+			ballY = BALL_BOTTOM_Y;
+			Bottom = true;
+		}
+
+		OBX -= 2;
+		if (OBX <= 0)
+		{
+			OBX = OB_BOTTOM_X;
+		}
+
+		if (ballY <= 3)
+		{
+			Jump = false;
+		}
+
+		globe(ballY);
+		obstacle(OBX);
+
+		curr = clock();
+		if (((curr - start) / CLOCKS_PER_SEC >= 1))
+		{
+			score++;
+			start = clock();
+		}
+		Sleep(60);
+		system("cls");
+		CurXY(22, 0);
+		printf("점수 : %d ", score);
+	}
+
+	GameOver(score);
+
+}
+
+
+void game_easy() {
+
+	while (true)
+	{
+		ConsoleView();
+		bool Jump = false; //점프가 아닐때
+		bool Bottom = true; //버튼이 눌러졌을때
+		const int gravity = 3;
+
+		int ballY = BALL_BOTTOM_Y;
+		int OBX = OB_BOTTOM_X;
+
+		int score = 0;
+		clock_t start, curr;
+		start = clock();
+
+		while (true)
+		{
+			if (Collision(OBX, ballY))
+				break;
+
+			if (GetKey() == ' ' && Bottom)
+			{
+				Jump = true; //점프 됐을떄
+				Bottom = false;
+			}
+			if (Jump)
+			{
+				ballY -= gravity;
+			}
+			else
+			{
+				ballY += gravity;
+			}
+
+			if (ballY >= BALL_BOTTOM_Y)
+			{
+				ballY = BALL_BOTTOM_Y;
+				Bottom = true;
+			}
+
+			OBX -= 2;
+			if (OBX <= 0)
+			{
+				OBX = OB_BOTTOM_X;
+			}
+
+			if (ballY <= 3)
+			{
+				Jump = false;
+			}
+
+			globe(ballY);
+			obstacle(OBX);
+
+			curr = clock();
+			if (((curr - start) / CLOCKS_PER_SEC >= 1))
+			{
+				score++;
+				start = clock();
+			}
+			Sleep(60);
+			system("cls");
+			CurXY(22, 0);
+			printf("점수 : %d ", score);
+		}
+
+		GameOver(score);
+
+	}
+}
+
+int main()
+{
+	while (1) {
+		system("title 메인메뉴");
+		int menucode = meun();
+		if (menucode == 0) {
+			int n = mapstage();
+
+			if (n == 0) {
+				game_easy();
+			}
+			else if (n == 1) {
+				game_hard();
+			}
+		}
+		else if (menucode == 1) {
+
+		}
+		else if (menucode == 2) {
+			return 0;#include<stdio.h>
+#include<windows.h>
+#include<conio.h>
+#include<time.h>
+#define BALL_BOTTOM_Y 17
+#define OB_BOTTOM_Y 20
+#define OB_BOTTOM_X 45
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
+#define SUBMIT 4
+void CurXY(int, int);
+int key() {
+	char temp = _getch();
+
+	if (temp == 'w'|| temp == 'W') {
+		return UP;
+	}
+	else if (temp == 'a' || temp == 'A') {
+		return LEFT;
+	}
+	else if (temp == 's'|| temp == 'S') {
+		return DOWN;
+	}
+	else if (temp == 'd'|| temp == 'D') {
+		return RIGHT;
+	}
+
+}
+
+void consol() {
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	cursorInfo.dwSize = 1;
+	cursorInfo.bVisible = FALSE;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+int meun()
+{
+	consol();
+	int n = key();
+	int a = 24;
+	int b = 12;
+	system("cls");
+	CurXY(a + 100, b + 200);
+	printf("위 로 이 동 W\n");
+	printf("아 래 로 이 동s\n");
+	printf("선 택 및 점 프 sapce 바");
+	CurXY(a +100, b -12);
+	printf("\n\n\n\n");
+	printf("                                     #####   #   #      #        #    #####\n");
+	printf("                                      #     #   #      # #     ##    #    #\n");
+	printf("                                     #     #   #      #  #   # #    #####\n");
+	printf("                                 #  #     #   #      #   # #  #    # \n");
+	printf("                                  #       ###       #    #   #    #\n");
+	CurXY(a - 2, b);
+	printf(">   *게 임 시 작*");
+	CurXY(a, b+1);
+	printf("  *제 작 자*");
+	CurXY(a, b+2);
+	printf("*게 임 종 료*");
+	while (1) {
+		int n = key();
+		switch (n) {
+		case UP: {
+			if (b > 12) {
+				CurXY(a - 2, b);
+				printf(" ");
+				CurXY(a - 2, --b);
+				printf(">");
+			}
+			break;
+			}
+		case DOWN: {
+			if (b < 14) {
+				CurXY(a - 2, b);
+				printf(" ");
+				CurXY(a - 2, ++b);
+				printf(">");
+
+			}
+			break;
+		}
+		case ' ': {
+			return b - 12;
+		}
+	}
+}
+}
+
+int mapstage() {
+	int n = key();
+	int x = 24;
+	int y = 12;
+	system("cls");
+	CurXY(x, y - 4);
+	printf("***난 이 도 선 택***");
+	CurXY(x - 2, y );
+	printf(">   *쉬 움*");
+	CurXY(x, y + 1 );
+	printf("*어 려 움*");
+	CurXY(x, y + 2);
+	printf("*뒤 로*");
+	while (1) {
+		int n = key();
+		switch (n) {
+		case UP: {
+			if (y > 12) {
+				CurXY(x - 2, y );
+				printf(" ");
+				CurXY(x - 2, --y  );
+				printf(">");
+			}
+			break;
+		}
+		case DOWN:{
+				   if (y < 14) {
+					   CurXY(x - 2, y);
+					   printf(" ");
+					   CurXY(x - 2, ++y );
+					   printf(">");
+					   }
+			   break;
+			   }
+			   case ' ': {
+				   return y - 12;
+			   }
+		}
+	}
+}
+		
+
+	
+
+void ConsoleView()
+{
+	system("mode con:cols=100 lines=25");
+	system("title 점프게임");
+}
+
+void main_ConsoleView()
+{
+	system("mode con:cols=115 lines=25");
+}
+int information() {
+	int x = 12;
+	int y = 6;
+	consol();
+	main_ConsoleView();
+	system("cls");
+	CurXY(x, y + 1);
+	printf("만든이 : 유승민\n");
+	CurXY(x, y + 3);
+	printf("G o o g l e 공 룡 게 임 과 비 슷 한 게 임 을 만 들 어 보 았 습 니 다.\n");
+	CurXY(x, y + 5);
+	printf("돌 아 가 려 면 스 페 이 스 바 를 누 르 십 시 오");
+	while(1){
+	int n = key();
+	switch (n) {
+	case ' ': {
+		return 0;
+	}
+	}
+	}
+	Sleep(5000);
+}
+
+void CurXY(int x, int y)
+{
+	COORD Pos;
+	Pos.X = 2 * x;
+	Pos.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+int GetKey()
+{
+
+	if (_kbhit() != 0)
+	{
+		return _getch();
+	}
+	return 0;
+}
+
+void globe(int ballY)
+{
+	CurXY(0, ballY);
+	static bool leg = true;
+	printf(" ******\n");
+	printf("*       *\n");
+	printf("*       *\n");
+	printf("*       *\n");
+	printf(" *******\n");
+	if (leg)
+	{
+		printf("   ㅣ-   l  \n");
+		printf("      - \n");
+		leg = false;
+	}
+	else
+	{
+		printf("   l   -l  \n");
+		printf("   -     \n");
+		leg = true;
+	}
+}
+
+void obstacle_easy(int OBX)
+{
+	CurXY(OBX, OB_BOTTOM_Y);
+	printf("*****\n");
+	CurXY(OBX, OB_BOTTOM_Y+1);
+	printf(" ***\n");
+	CurXY(OBX, OB_BOTTOM_Y+2);
+	printf(" ***\n");
+	CurXY(OBX, OB_BOTTOM_Y+3);
+	printf(" ***\n");
+}
+
+void obstacle_hard(int OBX)
+{
+	{
+		CurXY(OBX, OB_BOTTOM_Y - 2);
+		printf("ooooooooo\n");
+		CurXY(OBX, OB_BOTTOM_Y - 1);
+		printf("oo     oo\n");
+		CurXY(OBX, OB_BOTTOM_Y );
+		printf("oo     oo\n");
+		CurXY(OBX, OB_BOTTOM_Y + 1);
+		printf("oo     oo\n");
+		CurXY(OBX, OB_BOTTOM_Y + 2);
+		printf("oo     oo\n");
+		CurXY(OBX, OB_BOTTOM_Y + 3);
+		printf("oo     oo\n");
+	}
+}
+
+
+void GameOver(const int score)
+{
+	system("cls");
+	int x = 16;
+	int y = 8;
+	CurXY(x, y);
+	printf("----------------------------------\n");
+	CurXY(x, y + 1);
+	printf("----장애물에 걸려 넘어졌습니다----\n");
+	CurXY(x, y + 2);
+	printf("----------------------------------\n");
+	CurXY(x, y + 6);
+	printf("점수 : %d", score);
+	CurXY(x, y + 10);
+	printf("메인 메뉴로 되돌아 갑니다.");
+
+	printf("\n\n\n\n\n\n\n\n");
+	system("pause");
+}
+bool Collision_easy(const int OBX, const int ballY)
+{
+	CurXY(0, 0);
+	printf("OBX : %d, ballY : %d", OBX, ballY);
+	if (OBX <= 8 && OBX >= 1  && ballY > 13)
+	{
+		return true;
+	}
+	return false;
+}
+bool Collision_hard(const int OBX, const int ballY)
+{
+	CurXY(0, 0);
+	printf("OBX : %d, ballY : %d", OBX, ballY);
+	if (OBX <= 8 && OBX >= 1 && ballY > 8)
+	{
+		return true;
+	}
+	return false;
+}
+
+void game_hard() {
+	ConsoleView();
+	bool Jump = false; 
+	bool Bottom = true; 
+	const int gravity = 3;
+
+	int ballY = BALL_BOTTOM_Y;
+	int OBX = OB_BOTTOM_X;
+
+	int score = 0;
+	clock_t start, curr;
+	start = clock();
+
+	while (true)
+	{
+		if (Collision_hard(OBX, ballY))
+			break;
+
+		if (GetKey() == ' ' && Bottom)
+		{
+			Jump = true; 
+			Bottom = false;
+		}
+		if (Jump)
+		{
+			ballY -= gravity;
+		}
+		else
+		{
+			ballY += gravity;
+		}
+
+		if (ballY >= BALL_BOTTOM_Y)
+		{
+			ballY = BALL_BOTTOM_Y;
+			Bottom = true;
+		}
+
+		OBX -= 2;
+		if (OBX <= 0)
+		{
+			OBX = OB_BOTTOM_X;
+		}
+
+		if (ballY <= 3)
+		{
+			Jump = false;
+		}
+
+		globe(ballY);
+		obstacle_hard(OBX);
+
+		curr = clock();
+		if (((curr - start) / CLOCKS_PER_SEC >= 1))
+		{
+			score++;
+			start = clock();
+		}
+		Sleep(10);
+		system("cls");
+		CurXY(22, 0);
+		printf("점수 : %d ", score);
+	}
+
+	GameOver(score);
+
+}
+
+
+void game_easy() {
+	ConsoleView();
+	bool Jump = false;
+	bool Bottom = true;
+	const int gravity = 3;
+
+	int ballY = BALL_BOTTOM_Y;
+	int OBX = OB_BOTTOM_X;
+
+	int score = 0;
+	clock_t start, curr;
+	start = clock();
+
+	while (true)
+	{
+		if (Collision_easy(OBX, ballY))
+			break;
+
+		if (GetKey() == ' ' && Bottom)
+		{
+			Jump = true;
+			Bottom = false;
+		}
+		if (Jump)
+		{
+			ballY -= gravity;
+		}
+		else
+		{
+			ballY += gravity;
+		}
+
+		if (ballY >= BALL_BOTTOM_Y)
+		{
+			ballY = BALL_BOTTOM_Y;
+			Bottom = true;
+		}
+
+		OBX -= 2;
+		if (OBX <= 0)
+		{
+			OBX = OB_BOTTOM_X;
+		}
+
+		if (ballY <= 3)
+		{
+			Jump = false;
+		}
+
+		globe(ballY);
+		obstacle_easy(OBX);
+
+		curr = clock();
+		if (((curr - start) / CLOCKS_PER_SEC >= 1))
+		{
+			score++;
+			start = clock();
+		}
+		Sleep(50);
+		system("cls");
+		CurXY(22, 0);
+		printf("점수 : %d ", score);
+	}
+
+	GameOver(score);
+
+}
+
+int main()
+{
+	while (1) {
+		main_ConsoleView();
+		system("title 메인메뉴");
+		int menucode = meun();
+		if (menucode == 0) {
+			int n = mapstage();
+
+			if (n == 0) {
+				game_easy();
+			}
+			else if (n == 1) {
+				game_hard();
+			}
+		}
+		else if (menucode == 1) {
+			information();
+
+		}
+		else if (menucode == 2) {
+			return 0;
+		}
+		system("cls");
+	}
+		ConsoleView();
+		return 0;
+}
+
+		}
+		system("cls");
+	}
+		ConsoleView();
+		return 0;
+}
